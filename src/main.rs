@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
-use clap::Parser;
+use clap::{Args, Parser};
 use human_units::Size;
 use std::path::PathBuf;
 
@@ -16,12 +16,27 @@ struct CliArgs {
     #[arg(short, default_value = "3M")]
     size: Size,
 
+    /// number of parallel SSH connections to transfer with
+    #[arg(short, default_value = "5")]
+    parallel: u16,
+
+    #[command(flatten)]
+    output: CliArgsOutput,
+
     /// Files to split and transfer
     files: Vec<PathBuf>,
+}
 
-    /// Destination to transfer split chunks to
-    #[arg(last = true)]
-    dest: String,
+#[derive(Args, Debug)]
+#[group(required = true, multiple = false)]
+struct CliArgsOutput {
+    /// Output split chunks to local directory
+    #[arg(short)]
+    output: Option<PathBuf>,
+
+    /// Transfer split chunks to remote location
+    #[arg(short)]
+    remote: Option<String>,
 }
 
 fn main() {
